@@ -1,0 +1,62 @@
+# Dependencies
+node_modules/
+.angular/
+
+# Environment files
+.env
+**/environments/*.ts
+!**/environments/environment.example.ts
+
+# Compiled output
+/dist
+/tmp
+/out-tsc
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/
+
+# Misc
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# .NET
+bin/
+obj/
+*.user
+.vs/
+*.suo
+*.dbmdl
+*.jfm
+
+# Angular
+dist/
+node_modules/
+.angular/
+.vscode/
+.idea/
+*.log
+
+# Environment files
+**/environments/*.ts
+!**/environments/environment.example.ts
+.env
+appsettings.*.json
+!appsettings.example.json

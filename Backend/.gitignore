@@ -1,0 +1,14 @@
+# ...existing entries...
+
+# Environment files
+.env
+appsettings.*.json
+!appsettings.json
+!appsettings.Example.json
+secrets.json
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/

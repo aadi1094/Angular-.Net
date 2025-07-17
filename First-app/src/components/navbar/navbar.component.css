@@ -1,0 +1,101 @@
+/* Navigation container */
+nav {
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+/* Logo hover effect */
+.logo-hover:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+/* Navigation links */
+.nav-link {
+  position: relative;
+  color: #4B5563;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  background: #2563EB;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-link:hover {
+  color: #2563EB;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Active link state */
+.nav-link.active {
+  color: #2563EB;
+}
+
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* List Property button */
+.list-property-btn {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  transition: all 0.3s ease;
+  transform-origin: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.list-property-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15);
+}
+
+/* Auth buttons */
+.auth-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.auth-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.4s ease;
+}
+
+.auth-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Logout button */
+.logout-btn {
+  color: #DC2626;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  color: #B91C1C;
+  transform: translateY(-1px);
+}

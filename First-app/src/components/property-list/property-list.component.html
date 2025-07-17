@@ -1,0 +1,13 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">
+    Welcome to Housing Platform
+  </h1>
+  
+  <!-- Property Cards Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center mb-8">
+    <app-property-card 
+      *ngFor="let property of properties" 
+      [property]="property">
+    </app-property-card>
+  </div>
+</div>
