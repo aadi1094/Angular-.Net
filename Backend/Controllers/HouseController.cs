@@ -2,6 +2,7 @@ using Backend.Database.Models;
 using Backend.DTOs;
 using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ namespace Backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableCors("AllowOrigin")]
     public class HouseController : ControllerBase
     {
         private readonly IHouseService _houseService;
@@ -22,17 +24,19 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]  // Add this to ensure unauthenticated access
         public async Task<IActionResult> GetAll()
         {
             try
             {
+                _logger.LogInformation("Getting all houses");
                 var houses = await _houseService.GetAllHousesAsync();
                 return Ok(houses);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting all houses");
-                return StatusCode(500, new { message = "Internal server error" });
+                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
             }
         }
 
@@ -52,6 +56,9 @@ namespace Backend.Controllers
         {
             try
             {
+                // Add logging to debug authorization
+                _logger.LogInformation("User attempting to create house. Auth Header: {Auth}", Request.Headers["Authorization"].ToString());
+
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);

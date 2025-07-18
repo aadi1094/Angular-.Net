@@ -19,73 +19,84 @@ var connectionString = configuration.GetConnectionString("DefaultConnection") ??
     $"User={configuration["DB_USER"]};" +
     $"Password={configuration["DB_PASSWORD"]};";
 
-// Database configuration
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-
-// Add repositories
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
-// Add services
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IHouseService, HouseService>();
-
-// Configure JWT authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = configuration["JWT_ISSUER"],
-            ValidAudience = configuration["JWT_AUDIENCE"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(configuration["JWT_SECRET"] ?? 
-                    throw new InvalidOperationException("JWT_SECRET not found")))
-        };
-    });
-
-builder.Services.AddAuthorization();
-
 // Update CORS configuration
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowedOrigins", policy =>
-    {
-        var origins = configuration["ALLOWED_ORIGINS"]?.Split(',') ?? 
-            new[] { "http://localhost:4200" };
-        policy.WithOrigins(origins)
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
+    options.AddPolicy("AllowOrigin", builder =>
+        builder.WithOrigins("http://localhost:4200")
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials()
+               .WithExposedHeaders("Authorization"));
 });
 
-// Add Swagger support
+// Register services
+builder.Services.AddControllers();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+// Register all services
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IHouseService, HouseService>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add logging
-builder.Logging.AddConsole();
+// Configure JWT authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    var jwtSettings = configuration.GetSection("JwtSettings");
+    var key = Encoding.UTF8.GetBytes(
+        jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret not configured"));
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+    
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            if (context.Request.Headers.ContainsKey("Authorization"))
+            {
+                var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                context.Token = token;
+            }
+            return Task.CompletedTask;
+        }
+    };
+});
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Update middleware order
+app.UseRouting();
 
-app.UseHttpsRedirection();
-app.UseCors("AllowAll");
+// Add CORS middleware before Authentication but after Routing
+app.UseCors("AllowOrigin");
+
+// Authentication & Authorization
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
 
-// Create database and seed if needed
+// Controllers
+app.MapControllers(); // This should work now
+
+// Database initialization
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -94,15 +105,18 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        dbContext.Database.EnsureCreated();
+        // Drop and recreate the database
+        await dbContext.Database.EnsureDeletedAsync();
+        await dbContext.Database.EnsureCreatedAsync();
+        logger.LogInformation("Database recreated successfully");
 
-        // Seed some data if table is empty
-        if (!dbContext.Users.Any())
+        // Seed initial data if needed
+        if (!await dbContext.Users.AnyAsync())
         {
+            logger.LogInformation("Seeding default user...");
             var passwordHash = Convert.ToBase64String(
-                System.Security.Cryptography.SHA256.Create().ComputeHash(
-                    Encoding.UTF8.GetBytes("password123")
-                )
+                System.Security.Cryptography.SHA256.Create()
+                    .ComputeHash(Encoding.UTF8.GetBytes("password123"))
             );
             
             var user = new User 
@@ -115,24 +129,21 @@ using (var scope = app.Services.CreateScope())
 
             dbContext.Users.Add(user);
             await dbContext.SaveChangesAsync();
-
             logger.LogInformation("Default user created with ID: {UserId}", user.Id);
         }
         else
         {
-            var users = await dbContext.Users.ToListAsync();
-            logger.LogInformation("Existing users in database: {Count}", users.Count);
-            foreach (var user in users)
-            {
-                logger.LogInformation("User ID: {UserId}, Email: {Email}", user.Id, user.Email);
-            }
+            logger.LogInformation("Users table already has data. Skipping seed.");
         }
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "An error occurred while seeding the database");
+        logger.LogError(ex, "An error occurred while initializing the database");
         throw;
     }
 }
 
 app.Run();
+
+
+

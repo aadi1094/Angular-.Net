@@ -13,6 +13,8 @@ import { HouseService } from '../../services/house.service';
 })
 export class PropertyListComponent implements OnInit {
   properties: Property[] = [];
+  error: string = '';
+  isLoading = true;
 
   constructor(private houseService: HouseService) {}
 
@@ -21,12 +23,16 @@ export class PropertyListComponent implements OnInit {
   }
 
   private loadProperties(): void {
+    this.isLoading = true;
     this.houseService.getAllHouses().subscribe({
       next: (houses: Property[]) => {
         this.properties = houses;
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading properties:', error);
+        this.error = 'Failed to load properties. Please try again later.';
+        this.isLoading = false;
       }
     });
   }

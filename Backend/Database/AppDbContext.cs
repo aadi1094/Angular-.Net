@@ -6,12 +6,10 @@ namespace Backend.Database
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {
-        }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<House> Houses { get; set; } = null!;
         public DbSet<User> Users { get; set; } = null!;
+        public DbSet<House> Houses { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,8 +31,9 @@ namespace Backend.Database
 
                 entity.Property(e => e.AdditionalImages)
                     .HasConversion(
-                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
-                        v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null));
+                        v => string.Join(";", v),
+                        v => v.Split(";", StringSplitOptions.RemoveEmptyEntries).ToList()
+                    );
 
         entity.Property<bool>("IsDeleted")
             .HasDefaultValue(false);
@@ -55,6 +54,10 @@ namespace Backend.Database
 
                 entity.HasIndex(e => e.Email).IsUnique();
             });
+
+            // Configure global query filter for soft delete
+            modelBuilder.Entity<House>()
+                .HasQueryFilter(h => !h.IsDeleted);
         }
 
         // Add method for soft delete
@@ -89,4 +92,3 @@ private void UpdateSoftDeleteStatuses()
 }
     }
 }
-

@@ -2,11 +2,13 @@ using Backend.DTOs;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Cors;
 
 namespace Backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableCors("AllowOrigin")]  // Add this attribute
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -36,14 +38,29 @@ namespace Backend.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
         {
-            var response = await _authService.Register(registerRequest);
-            
-            if (!response.Success)
+            try
             {
-                return BadRequest(response);
+                _logger.LogInformation("Registration attempt for email: {Email}", registerRequest.Email);
+                
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(new { Success = false, Message = "Invalid input data" });
+                }
+
+                var response = await _authService.Register(registerRequest);
+                
+                if (!response.Success)
+                {
+                    return BadRequest(response);
+                }
+                
+                return Ok(response);
             }
-            
-            return Ok(response);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Registration failed for email: {Email}", registerRequest.Email);
+                return StatusCode(500, new { Success = false, Message = "Registration failed due to server error" });
+            }
         }
     }
 }

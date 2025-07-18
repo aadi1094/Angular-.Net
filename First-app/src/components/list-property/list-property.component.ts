@@ -192,14 +192,14 @@ export class ListPropertyComponent implements OnInit, OnDestroy {
       area: this.propertyData.area,
       city: this.propertyData.city,
       areaSize: this.propertyData.areaSize,
-      imageUrl: this.uploadedImages[0],
+      imageUrl: this.uploadedImages[0], // Main image
       type: this.propertyData.type,
       bedrooms: parseInt(this.propertyData.bedrooms),
       bathrooms: parseInt(this.propertyData.bathrooms),
       propertyType: this.propertyData.propertyType,
       description: this.propertyData.description,
       amenities: this.propertyData.amenities,
-      additionalImages: this.uploadedImages.slice(1) // Store additional images
+      additionalImages: this.uploadedImages.slice(1) // Store additional images array
     };
 
     const request = this.isEditing 

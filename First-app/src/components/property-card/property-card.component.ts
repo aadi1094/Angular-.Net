@@ -20,9 +20,7 @@ export class PropertyCardComponent implements OnInit, OnDestroy {
   isOwner = false;
   showDeleteConfirm = false;
   showMenu = false;
-  showDetails = false;
   private subscription!: Subscription;
-  currentImage: string | null = null;
 
   constructor(
     private router: Router,
@@ -77,39 +75,15 @@ export class PropertyCardComponent implements OnInit, OnDestroy {
     this.showDeleteConfirm = false;
   }
 
-  getAllImages(): string[] {
-    const images: string[] = [];
-    if (this.property.imageUrl) {
-      images.push(this.property.imageUrl);
-    }
-    if (this.property.additionalImages && this.property.additionalImages.length > 0) {
-      images.push(...this.property.additionalImages);
-    }
-    return images.filter(img => img); // Filter out any null/undefined values
-  }
-
-  setCurrentImage(image: string) {
-    this.currentImage = image;
-  }
-
   showPropertyDetails() {
-    this.showDetails = true;
-    const images = this.getAllImages();
-    this.currentImage = images.length > 0 ? images[0] : null;
-    // Prevent body scrolling when modal is open
-    document.body.style.overflow = 'hidden';
-  }
-
-  closeDetails() {
-    this.showDetails = false;
-    // Restore body scrolling
-    document.body.style.overflow = 'auto';
+    this.router.navigate(['/property', this.property.id]);
   }
 
   // Close modal on escape key
   @HostListener('document:keydown.escape')
   onEscapePress() {
-    this.closeDetails();
+    this.showDeleteConfirm = false;
+    this.showMenu = false;
   }
 
   @HostListener('document:click', ['$event'])
@@ -118,19 +92,6 @@ export class PropertyCardComponent implements OnInit, OnDestroy {
       this.showMenu = false;
     }
   }
-
-  navigateNext() {
-    const images = this.getAllImages();
-    const currentIndex = images.indexOf(this.currentImage || '');
-    const nextIndex = (currentIndex + 1) % images.length;
-    this.currentImage = images[nextIndex];
-  }
-
-  navigatePrevious() {
-    const images = this.getAllImages();
-    const currentIndex = images.indexOf(this.currentImage || '');
-    const previousIndex = (currentIndex - 1 + images.length) % images.length;
-    this.currentImage = images[previousIndex];
-  }
 }
+
 

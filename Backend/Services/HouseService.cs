@@ -2,21 +2,28 @@ using Backend.Database;
 using Backend.Database.Models;
 using Backend.DTOs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Backend.Services
 {
     public class HouseService : IHouseService
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<HouseService> _logger;
 
-        public HouseService(AppDbContext context)
+        public HouseService(AppDbContext context, ILogger<HouseService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<HouseDto>> GetAllHousesAsync()
         {
-            var houses = await _context.Houses.ToListAsync();
+            var houses = await _context.Houses
+                .Include(h => h.Owner)
+                .Where(h => !h.IsDeleted)
+                .ToListAsync();
+                
             return houses.Select(house => new HouseDto
             {
                 Id = house.Id,
@@ -38,7 +45,7 @@ namespace Backend.Services
         public async Task<HouseDto?> GetHouseByIdAsync(int id)
         {
             var house = await _context.Houses.FindAsync(id);
-            if (house == null)
+            if (house == null || house.IsDeleted)
                 return null;
                 
             return new HouseDto
@@ -61,13 +68,6 @@ namespace Backend.Services
 
         public async Task<HouseDto> CreateHouseAsync(CreateHouseDto houseDto, int userId)
         {
-            // First verify the user exists
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null)
-            {
-                throw new Exceptions.EntityNotFoundException($"User with ID {userId} not found");
-            }
-
             var house = new House
             {
                 Name = houseDto.Name,
@@ -76,14 +76,14 @@ namespace Backend.Services
                 City = houseDto.City,
                 AreaSize = houseDto.AreaSize,
                 ImageUrl = houseDto.ImageUrl,
+                AdditionalImages = houseDto.AdditionalImages?.ToList() ?? new List<string>(),
                 Type = houseDto.Type,
                 Bedrooms = houseDto.Bedrooms,
                 Bathrooms = houseDto.Bathrooms,
                 PropertyType = houseDto.PropertyType,
                 Description = houseDto.Description,
                 OwnerId = userId,
-                Amenities = houseDto.Amenities,
-                AdditionalImages = houseDto.AdditionalImages
+                Amenities = houseDto.Amenities
             };
 
             await _context.Houses.AddAsync(house);
@@ -139,16 +139,13 @@ namespace Backend.Services
 
         public async Task<bool> DeleteHouseAsync(int id, int userId)
         {
-            var house = await _context.Houses
-                .Include(h => h.Owner)
-                .FirstOrDefaultAsync(h => h.Id == id);
-            
-            if (house == null || (house.OwnerId != userId && house.Owner?.Role != "Admin"))
-            {
+            var house = await _context.Houses.FindAsync(id);
+            if (house == null || house.OwnerId != userId)
                 return false;
-            }
 
-            _context.Houses.Remove(house);
+            // Soft delete
+            house.IsDeleted = true;
+            house.DeletedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return true;
         }
@@ -156,7 +153,7 @@ namespace Backend.Services
         public async Task<IEnumerable<HouseDto>> GetHousesByTypeAsync(string type)
         {
             var houses = await _context.Houses
-                .Where(h => h.Type.ToLower() == type.ToLower())
+                .Where(h => h.Type.ToLower() == type.ToLower() && !h.IsDeleted)
                 .ToListAsync();
 
             return houses.Select(house => new HouseDto
@@ -178,3 +175,4 @@ namespace Backend.Services
         }
     }
 }
+                

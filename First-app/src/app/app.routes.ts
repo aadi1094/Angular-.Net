@@ -6,9 +6,12 @@ import { BuyComponent } from '../components/buy/buy.component';
 import { RentComponent } from '../components/rent/rent.component';
 import { ListPropertyComponent } from '../components/list-property/list-property.component';
 import { authGuard } from '../guards/auth.guard';
+import { PropertyCardComponent } from '../components/property-card/property-card.component';
+import { PropertyDetailsComponent } from '../components/property-details/property-details.component';
 
 export const routes: Routes = [
-  { path: '', component: PropertyListComponent },
+  { path: '', redirectTo: '/properties', pathMatch: 'full' },
+  { path: 'properties', component: PropertyListComponent },
   { path: 'buy', component: BuyComponent },
   { path: 'rent', component: RentComponent },
   { path: 'list-property', component: ListPropertyComponent },
@@ -18,6 +21,10 @@ export const routes: Routes = [
     path: 'edit-property/:id',
     component: ListPropertyComponent,
     canActivate: [authGuard]
+  },
+  {
+    path: 'property/:id',
+    component: PropertyDetailsComponent
   },
   { path: '**', redirectTo: '' }
 ];
