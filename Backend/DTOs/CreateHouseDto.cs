@@ -15,5 +15,6 @@ namespace Backend.DTOs
         public string Description { get; set; } = string.Empty;
         public List<string>? Amenities { get; set; }
         public List<string>? AdditionalImages { get; set; }
+        public string? ContactNumber { get; set; }
     }
 }

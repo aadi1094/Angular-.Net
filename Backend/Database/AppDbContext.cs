@@ -15,49 +15,31 @@ namespace Backend.Database
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<House>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
-                entity.Property(e => e.Area).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.City).IsRequired().HasMaxLength(100);
-                
-                // Configure JSON columns
-                entity.Property(e => e.Amenities)
-                    .HasConversion(
-                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
-                        v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null));
-
-                entity.Property(e => e.AdditionalImages)
-                    .HasConversion(
-                        v => string.Join(";", v),
-                        v => v.Split(";", StringSplitOptions.RemoveEmptyEntries).ToList()
-                    );
-
-        entity.Property<bool>("IsDeleted")
-            .HasDefaultValue(false);
-
-        entity.Property<DateTime?>("DeletedAt");
-
-        // Add global query filter for soft delete
-        entity.HasQueryFilter(h => !EF.Property<bool>(h, "IsDeleted"));
-            });
-
+            // Configure User entity
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.PasswordHash).IsRequired();
+                entity.Property(e => e.Name).HasMaxLength(100);
+                entity.Property(e => e.Email).HasMaxLength(100);
                 entity.Property(e => e.Role).HasMaxLength(50);
-
-                entity.HasIndex(e => e.Email).IsUnique();
             });
 
-            // Configure global query filter for soft delete
-            modelBuilder.Entity<House>()
-                .HasQueryFilter(h => !h.IsDeleted);
+            // Configure House entity
+            modelBuilder.Entity<House>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.AdditionalImages)
+                      .HasConversion(
+                          v => string.Join(";", v ?? new List<string>()),
+                          v => v.Split(";", StringSplitOptions.RemoveEmptyEntries).ToList()
+                      );
+                entity.Property(e => e.Amenities)
+                      .HasConversion(
+                          v => string.Join(";", v ?? new List<string>()),
+                          v => v.Split(";", StringSplitOptions.RemoveEmptyEntries).ToList()
+                      );
+                entity.HasQueryFilter(h => !h.IsDeleted);
+            });
         }
 
         // Add method for soft delete
@@ -92,3 +74,4 @@ private void UpdateSoftDeleteStatuses()
 }
     }
 }
+

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { HouseService } from '../../services/house.service';
 import { PropertyCardComponent } from '../property-card/property-card.component';
 import { Property } from '../../services/property.service';
@@ -7,39 +8,60 @@ import { Property } from '../../services/property.service';
 @Component({
   selector: 'app-rent',
   standalone: true,
-  imports: [CommonModule, PropertyCardComponent],
+  imports: [CommonModule, PropertyCardComponent, FormsModule],
   templateUrl: './rent.component.html',
   styles: []
 })
 export class RentComponent implements OnInit {
   allProperties: Property[] = [];
   filteredProperties: Property[] = [];
+  availableCities: string[] = [];
   
   // Filter properties
   filters = {
-    location: '',
+    city: '',
     monthlyRent: '',
-    bedrooms: ''
+    bedrooms: '',
+    propertyType: ''
   };
 
   constructor(private houseService: HouseService) {}
 
   ngOnInit(): void {
-    this.houseService.getAllHouses()
-      .subscribe(houses => {
+    this.loadProperties();
+  }
+
+  loadProperties(): void {
+    this.houseService.getAllHouses().subscribe({
+      next: (houses) => {
         this.allProperties = houses.filter(h => h.type === 'For Rent');
         this.filteredProperties = [...this.allProperties];
-      });
+        this.extractAvailableCities();
+      },
+      error: (error) => {
+        console.error('Error loading properties:', error);
+      }
+    });
+  }
+
+  extractAvailableCities(): void {
+    const cities = this.allProperties.map(property => property.city);
+    this.availableCities = [...new Set(cities)].sort();
   }
 
   onFilterChange(filterType: string, value: string) {
     this.filters[filterType as keyof typeof this.filters] = value;
+    this.applyFilters();
   }
 
   onSearch() {
+    this.applyFilters();
+  }
+
+  private applyFilters(): void {
     this.filteredProperties = this.allProperties.filter(property => {
-      // Location filter
-      if (this.filters.location && !property.area.toLowerCase().includes(this.filters.location.toLowerCase())) {
+      // City filter
+      if (this.filters.city && property.city !== this.filters.city) {
         return false;
       }
 
@@ -59,13 +81,17 @@ export class RentComponent implements OnInit {
         }
       }
 
-      // Bedrooms filter (simplified - checking if property name contains bedroom info)
+      // Property type filter
+      if (this.filters.propertyType && property.propertyType !== this.filters.propertyType) {
+        return false;
+      }
+
+      // Bedrooms filter
       if (this.filters.bedrooms) {
-        const bedrooms = this.filters.bedrooms;
-        if (bedrooms === '1' && !property.name.toLowerCase().includes('studio') && !property.name.toLowerCase().includes('1')) {
+        const bedrooms = parseInt(this.filters.bedrooms);
+        if (property.bedrooms !== bedrooms) {
           return false;
         }
-        // Add more bedroom logic as needed
       }
 
       return true;

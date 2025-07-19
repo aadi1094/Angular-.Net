@@ -17,7 +17,6 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./list-property.component.css']
 })
 export class ListPropertyComponent implements OnInit, OnDestroy {
-  
   propertyData = {
     name: '',
     propertyType: '',
@@ -29,7 +28,8 @@ export class ListPropertyComponent implements OnInit, OnDestroy {
     type: '',
     price: 0,
     description: '',
-    amenities: [] as string[]
+    amenities: [] as string[],
+    contactNumber: ''
   };
 
   uploadedImages: string[] = [];
@@ -85,7 +85,8 @@ export class ListPropertyComponent implements OnInit, OnDestroy {
             type: property.type || '',
             price: property.price || 0,
             description: property.description || '',
-            amenities: property.amenities || []
+            amenities: property.amenities || [],
+            contactNumber: property.contactNumber || ''
           };
 
           // Handle images
@@ -156,7 +157,7 @@ export class ListPropertyComponent implements OnInit, OnDestroy {
 
   calculateFormProgress(): number {
     let filledFields = 0;
-    const totalFields = 7; // Count of required fields
+    const totalFields = 8; // Count of required fields
     
     if (this.propertyData.name) filledFields++;
     if (this.propertyData.propertyType) filledFields++;
@@ -165,6 +166,7 @@ export class ListPropertyComponent implements OnInit, OnDestroy {
     if (this.propertyData.areaSize > 0) filledFields++;
     if (this.propertyData.type) filledFields++;
     if (this.propertyData.price > 0) filledFields++;
+    if (this.propertyData.contactNumber) filledFields++;
     
     return Math.round((filledFields / totalFields) * 100);
   }
@@ -199,7 +201,8 @@ export class ListPropertyComponent implements OnInit, OnDestroy {
       propertyType: this.propertyData.propertyType,
       description: this.propertyData.description,
       amenities: this.propertyData.amenities,
-      additionalImages: this.uploadedImages.slice(1) // Store additional images array
+      additionalImages: this.uploadedImages.slice(1), // Store additional images array
+      contactNumber: this.propertyData.contactNumber
     };
 
     const request = this.isEditing 
@@ -245,7 +248,8 @@ export class ListPropertyComponent implements OnInit, OnDestroy {
       type: '',
       price: 0,
       description: '',
-      amenities: []
+      amenities: [],
+      contactNumber: ''
     };
     this.uploadedImages = [];
     this.errorMessage = '';

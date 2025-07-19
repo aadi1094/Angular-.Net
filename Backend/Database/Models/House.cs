@@ -26,5 +26,6 @@ namespace Backend.Database.Models
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public string ContactNumber { get; set; } = string.Empty;
     }
 }

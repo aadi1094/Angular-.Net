@@ -18,6 +18,7 @@ export interface Property {
   amenities?: string[];
   additionalImages?: string[];
   listedDate?: Date;
+  contactNumber?: string;
 }
 
 @Injectable({

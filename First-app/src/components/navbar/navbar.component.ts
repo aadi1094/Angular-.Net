@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -10,8 +10,10 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
+  showUserMenu = false;
+  showMobileMenu = false;
 
   constructor(
     private router: Router,
@@ -20,6 +22,14 @@ export class NavbarComponent {
     this.authService.isLoggedIn$.subscribe(
       isLoggedIn => this.isLoggedIn = isLoggedIn
     );
+  }
+
+  ngOnInit(): void {
+    // Any initialization logic can go here
+  }
+
+  ngOnDestroy(): void {
+    // Clean up subscriptions or other resources here
   }
 
   isRouteActive(route: string): boolean {
@@ -53,5 +63,36 @@ export class NavbarComponent {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/']);
+  }
+
+  toggleUserMenu() {
+    this.showUserMenu = !this.showUserMenu;
+  }
+
+  toggleMobileMenu() {
+    this.showMobileMenu = !this.showMobileMenu;
+  }
+
+  closeMobileMenu() {
+    this.showMobileMenu = false;
+  }
+
+  navigateToProfile() {
+    this.showUserMenu = false;
+    // Implement profile navigation
+  }
+
+  navigateToMyProperties() {
+    this.showUserMenu = false;
+    // Implement my properties navigation
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.menu-container') && !target.closest('[aria-haspopup="true"]')) {
+      this.showUserMenu = false;
+      this.showMobileMenu = false;
+    }
   }
 }

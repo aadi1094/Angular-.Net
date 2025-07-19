@@ -15,6 +15,11 @@ namespace Backend.DTOs
         public string PropertyType { get; set; } = string.Empty; // house, apartment, etc.
         public string Description { get; set; } = string.Empty;
         public int? OwnerId { get; set; }
+        public List<string>? Amenities { get; set; }
+        public List<string>? AdditionalImages { get; set; }
+        public string ContactNumber { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 
     public class CreateHouseDtoNew

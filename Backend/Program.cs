@@ -105,10 +105,9 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        // Drop and recreate the database
-        await dbContext.Database.EnsureDeletedAsync();
+        // Ensure database and tables are created
         await dbContext.Database.EnsureCreatedAsync();
-        logger.LogInformation("Database recreated successfully");
+        logger.LogInformation("Database and tables created successfully");
 
         // Seed initial data if needed
         if (!await dbContext.Users.AnyAsync())
@@ -139,11 +138,11 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         logger.LogError(ex, "An error occurred while initializing the database");
-        throw;
     }
 }
 
 app.Run();
+           
 
 
 
