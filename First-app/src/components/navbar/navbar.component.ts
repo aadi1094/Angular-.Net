@@ -84,7 +84,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   navigateToMyProperties() {
     this.showUserMenu = false;
-    // Implement my properties navigation
+    this.router.navigate(['/my-properties']);
   }
 
   @HostListener('document:click', ['$event'])

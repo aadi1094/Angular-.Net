@@ -29,7 +29,7 @@ nav {
   height: 2px;
   bottom: 0;
   left: 50%;
-  background: #2563EB;
+  background: linear-gradient(90deg, #d946ef, #f97316);
   transition: all 0.3s ease;
   transform: translateX(-50%);
 }
@@ -44,7 +44,7 @@ nav {
 
 /* Active link state */
 .nav-link.active {
-  color: #2563EB;
+  color: #d946ef;
 }
 
 .nav-link.active::after {
@@ -53,15 +53,15 @@ nav {
 
 /* List Property button */
 .list-property-btn {
-  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  background: linear-gradient(135deg, #d946ef 0%, #f97316 100%);
   transition: all 0.3s ease;
   transform-origin: center;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(217, 70, 239, 0.3);
 }
 
 .list-property-btn:hover {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 8px -1px rgba(217, 70, 239, 0.4);
 }
 
 /* Auth buttons */
@@ -78,7 +78,7 @@ nav {
   left: 50%;
   width: 0;
   height: 0;
-  background: rgba(37, 99, 235, 0.1);
+  background: rgba(217, 70, 239, 0.1);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   transition: all 0.4s ease;

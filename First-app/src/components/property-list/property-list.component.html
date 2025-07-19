@@ -1,20 +1,157 @@
-<div class="container mx-auto px-4 py-8">
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="text-center py-8">
-    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-    <p class="mt-4 text-gray-600">Loading properties...</p>
-  </div>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Hero Section -->
+    <div class="text-center mb-12 relative">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-3xl -skew-y-1"></div>
+      <div class="relative z-10 py-16">
+        <h1 class="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-teal-600 bg-clip-text text-transparent mb-6">
+          EstateHub Properties
+        </h1>
+        <p class="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+          Discover your perfect home from our curated collection of premium properties. 
+          Whether you're buying or renting, find exceptional living spaces that match your lifestyle.
+        </p>
+        
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 max-w-4xl mx-auto">
+          <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200">
+            <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900 mb-2">{{ properties.length }}+</h3>
+            <p class="text-slate-600 font-medium">Premium Properties</p>
+          </div>
+          
+          <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200">
+            <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900 mb-2">50+</h3>
+            <p class="text-slate-600 font-medium">Prime Locations</p>
+          </div>
+          
+          <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200">
+            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900 mb-2">98%</h3>
+            <p class="text-slate-600 font-medium">Happy Clients</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <!-- Error State -->
-  <div *ngIf="error" class="bg-red-50 text-red-600 p-4 rounded-lg mb-6">
-    {{ error }}
-  </div>
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex flex-col justify-center items-center h-64" role="status" aria-live="polite">
+      <div class="relative mb-4">
+        <div class="animate-spin rounded-full h-16 w-16 border-4 border-indigo-200"></div>
+        <div class="animate-spin rounded-full h-16 w-16 border-4 border-indigo-600 border-t-transparent absolute top-0 left-0"></div>
+      </div>
+      <p class="text-slate-600 font-medium">Discovering amazing properties for you...</p>
+      <span class="sr-only">Loading properties...</span>
+    </div>
 
-  <!-- Properties Grid -->
-  <div *ngIf="!isLoading && !error" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <app-property-card 
-      *ngFor="let property of properties" 
-      [property]="property">
-    </app-property-card>
+    <!-- Error State -->
+    <div *ngIf="error" class="max-w-2xl mx-auto mb-8" role="alert">
+      <div class="bg-red-50 border border-red-200 text-red-700 p-6 rounded-2xl">
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-4">
+            <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold mb-1">Unable to Load Properties</h3>
+            <p>{{ error }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Properties Grid -->
+    <div *ngIf="!isLoading && !error && properties.length > 0" class="space-y-8">
+      <!-- Section Header -->
+      <div class="text-center">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Featured Properties</h2>
+        <div class="w-24 h-1 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full mx-auto"></div>
+      </div>
+      
+      <!-- Properties Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+        <app-property-card 
+          *ngFor="let property of properties; trackBy: trackByPropertyId" 
+          [property]="property"
+          class="transform hover:scale-105 transition-transform duration-300">
+        </app-property-card>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && !error && properties.length === 0" class="text-center py-16">
+      <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-12 max-w-2xl mx-auto border border-slate-200">
+        <div class="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-slate-900 mb-4">No Properties Available</h3>
+        <p class="text-slate-600 text-lg mb-8">
+          We're constantly adding new properties to our portfolio. Check back soon for exciting new listings!
+        </p>
+        <button 
+          onclick="window.location.reload()"
+          class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-indigo-500/25 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          Refresh Properties
+        </button>
+      </div>
+    </div>
+
+    <!-- Call to Action Section -->
+    <div *ngIf="!isLoading && properties.length > 0" class="mt-16 bg-gradient-to-r from-indigo-600 via-purple-600 to-teal-600 rounded-3xl p-8 lg:p-12 text-center text-white relative overflow-hidden">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 bg-white/10 backdrop-blur-3xl"></div>
+      <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
+      <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full translate-y-24 -translate-x-24"></div>
+      
+      <div class="relative z-10">
+        <h2 class="text-3xl lg:text-4xl font-bold mb-4">
+          Ready to Find Your Dream Home?
+        </h2>
+        <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+          Join thousands of satisfied clients who found their perfect property through EstateHub. 
+          Start your journey today!
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button 
+            onclick="window.location.href='/buy'"
+            class="inline-flex items-center px-8 py-4 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 transition-all duration-200 transform hover:scale-105">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+            </svg>
+            Browse Properties to Buy
+          </button>
+          <button 
+            onclick="window.location.href='/rent'"
+            class="inline-flex items-center px-8 py-4 bg-white/20 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 transition-all duration-200 transform hover:scale-105 border border-white/30">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            Explore Rentals
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

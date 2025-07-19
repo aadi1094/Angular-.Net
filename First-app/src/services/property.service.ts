@@ -19,6 +19,8 @@ export interface Property {
   additionalImages?: string[];
   listedDate?: Date;
   contactNumber?: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 
 @Injectable({

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TrackByFunction } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HouseService } from '../../services/house.service';
@@ -24,6 +24,7 @@ export class RentComponent implements OnInit {
     bedrooms: '',
     propertyType: ''
   };
+trackByPropertyId: TrackByFunction<Property> = (index: number, property: Property) => property.id;
 
   constructor(private houseService: HouseService) {}
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TrackByFunction } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PropertyCardComponent } from '../property-card/property-card.component';
 import { Property } from '../../services/property.service';
@@ -15,6 +15,7 @@ export class PropertyListComponent implements OnInit {
   properties: Property[] = [];
   error: string = '';
   isLoading = true;
+  trackByPropertyId: TrackByFunction<Property> = (index, property) => property.id;
 
   constructor(private houseService: HouseService) {}
 

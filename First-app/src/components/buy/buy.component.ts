@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TrackByFunction } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Add this import
 import { PropertyService, Property } from '../../services/property.service';
@@ -18,14 +18,15 @@ export class BuyComponent implements OnInit {
   availableCities: string[] = [];
   
   // Filter properties
-  filters = {
-    city: '',
-    priceRange: '',
-    propertyType: '',
-    bedrooms: ''
-  };
+filters = {
+  city: '',
+  priceRange: '',
+  propertyType: '',
+  bedrooms: ''
+};
+trackByPropertyId: TrackByFunction<Property> = (index: number, property: Property) => property.id;
 
-  constructor(private houseService: HouseService) {}
+constructor(private houseService: HouseService) {}
 
   ngOnInit(): void {
     this.loadProperties();
